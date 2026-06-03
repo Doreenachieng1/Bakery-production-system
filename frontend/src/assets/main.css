@@ -1,0 +1,35 @@
+@import './base.css';
+@import "tailwindcss";
+
+#app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding:2rem;
+  font-weight: normal;
+}
+a,
+.green {
+ text-emphasis: none;
+  color: #4CAF50;
+  transition: 0.4s;
+  padding: 3px 6px;
+}
+@media (hovers: hover) {
+  a:hover,
+  .green:hover {
+   background-color: #388E3C;
+    text-decoration: none;
+
+  }
+}
+@media (max-width: 1024px) {}
+
+body {
+    padding: 0.5rem;
+  
+  #app {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 2rem;
+  }
+}
