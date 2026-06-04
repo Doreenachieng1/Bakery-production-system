@@ -1,5 +1,15 @@
 <script setup>
 import {ref} from 'vue'
+import ProductCard from './components/ProductCard.vue'
+import StockIndicator from './components/Stockindicator.vue'
+import About from './views/AboutView.vue' 
+import Home from './views/HomeView.vue'
+import Sales from './views/SalesView.vue'
+import login from './views/LoginView.vue'
+import Product from './views/ProductView.vue'
+import tailwindcss from '@tailwindcss/vite'
+
+
 
 const products = ref ([
   {id: 1, name: 'Bread', prices: 60, category: 'Bakery', shelf_life: 24},
@@ -32,7 +42,10 @@ div {
 id {
   font-weight: bold;
 }
+h2 {
+  text-align: center;
 
+}
 
 </style>
 
