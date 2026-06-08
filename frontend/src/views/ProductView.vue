@@ -78,7 +78,7 @@ const sellProduct = (product) => {
 
 const confirmSale = () => {
   alert(
-    Sold ${quantity.value} ${selectedProduct.value.name}(s) for KES ${totalPrice.value}
+    `Sold ${quantity.value} ${selectedProduct.value.name}(s) for KES ${totalPrice.value}`
   )
 
   selectedProduct.value = null
@@ -104,6 +104,7 @@ const longShelfCount = computed(
 
 
 <template>
+
   <main>
     <h1>Products</h1>
     <p>Welcome to the products page!</p>
@@ -117,105 +118,105 @@ const longShelfCount = computed(
           ({{ activeCount }} active)
         </p>
       </div>
-    </div>
-
-    <!-- Search and filter bar -->
-    <div class="filter-bar">
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="Search products..."
-        class="search-input"
+   </div>
+  </div>
+  <!-- Search and filter bar -->
+  <div class="filter-bar">
+    <input
+      v-model="searchQuery"
+      type="text"
+      placeholder="Search products..."
+      class="search-input"
       >
-      <select v-model="selectedCategory" class="filter-select">
-        <option v-for="cat in categories" :key="cat" :value="cat">
+     <select v-model="selectedCategory" class="filter-select">
+       <option v-for="cat in categories" :key="cat" :value="cat">
           {{ cat === 'all' ? 'All categories' : cat }}
         </option>
       </select>
-    </div>
+  </div>
 
-    <!-- Product grid -->
-    <div class="product-grid">
-      <ProductCard
-        v-for="product in filteredProducts"
-        :key="product.id"
-        :product="product"
-        @sell-product="handleSale"
-        @view-recipe="handleViewRecipe"
-      />
-    </div>
+   <!-- Product grid -->
+  <div class="product-grid">
+    <ProductCard
+      v-for="product in filteredProducts"
+      :key="product.id"
+      :product="product"
+      @sell-product="handleSale"
+      @view-recipe="handleViewRecipe"
+    />
+  </div>
 
-    <!-- Empty state -->
-    <div v-if="filteredProducts.length === 0" class="empty-state">
+  <!-- Empty state -->
+  <div v-if="filteredProducts.length === 0" class="empty-state">
       <p>No products match your search. Try a different term or category.</p>
-    </div>
-     <div class="p-6">
-    <!-- TASK 3 COUNTER -->
-    <div class="mb-4 text-lg font-semibold">
-      🔴 {{ urgentCount }} urgent |
-      🟡 {{ fastSellerCount }} fast sellers |
-      🟢 {{ longShelfCount }} long shelf life
-    </div>
+  </div>
+  <div class="p-6"></div>
+  <!-- TASK 3 COUNTER -->
+  <div class="mb-4 text-lg font-semibold">
+    🔴 {{ urgentCount }} urgent |
+    🟡 {{ fastSellerCount }} fast sellers |
+    🟢 {{ longShelfCount }} long shelf life
+  </div>
     
-     <!-- TASK 4 FILTER -->
-    <div class="mb-4">
-      <label class="flex items-center gap-2">
-        <input type="checkbox" v-model="showInactive" />
-        Show inactive products
-      </label>
-    </div>
+  <!-- TASK 4 FILTER -->
+  <div class="mb-4">
+    <label class="flex items-center gap-2">
+      <input type="checkbox" v-model="showInactive" />
+      Show inactive products
+    </label>
+  </div>
 
-     <!-- PRODUCTS GRID -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div
-        v-for="product in filteredProducts"
-        :key="product.id"
-        class="border rounded-lg p-4 shadow"
-        :class="{
-          'opacity-50 bg-gray-100': !product.is_active,
-        }"
-      ></div>
-        <div class="flex justify-between items-start">
-          <h2 class="text-xl font-bold">
-            {{ product.name }}
-          </h2>
-      <!-- TASK 4 TOGGLE -->
-          <button
-            @click="toggleActive(product)"
-            class="text-xs px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
-          >
-            {{ product.is_active ? "Deactivate" : "Activate" }}
-          </button>
-        </div>
+  <!-- PRODUCTS GRID -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+  <div
+    v-for="product in filteredProducts"
+    :key="product.id"
+    class="border rounded-lg p-4 shadow"
+    :class="{
+    'opacity-50 bg-gray-100': !product.is_active,
+    }"
+    >
+  </div>
+  <div class="flex justify-between items-start">
+    <h2 class="text-xl font-bold">
+      {{ product.name }}
+    </h2>
+    <!-- TASK 4 TOGGLE -->
+    <button
+     @click="toggleActive(product)"
+      class="text-xs px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
+      >
+      {{ product.is_active ? "Deactivate" : "Activate" }}
+    </button>
+  </div>
 
-          <p>KES {{ product.price }}</p>
-          <p>{{ product.category }}</p>
-          <p>{{ product.unit }}</p>
+  <p>KES {{ product.price }}</p>
+  <p>{{ product.category }}</p>
+  <p>{{ product.unit }}</p>
 
-        <!-- TASK 3 BADGES -->
-        <div class="mt-2">
-          <span
-              v-if="product.shelf_life <= 12"
-             class="bg-red-500 text-white px-2 py-1 rounded text-sm"
-             >
-              Urgent sale
-          </span>
+  <!-- TASK 3 BADGES -->
+  <div class="mt-2">
+    <span
+      v-if="product.shelf_life <= 12"
+      class="bg-red-500 text-white px-2 py-1 rounded text-sm"
+      >
+      Urgent sale
+    </span>
 
-          <span
-              v-else-if="product.shelf_life <= 48"
-              class="bg-yellow-400 text-black px-2 py-1 rounded text-sm"
-            >
-             Fast seller
-          </span>
+    <span
+      v-else-if="product.shelf_life <= 48"
+      class="bg-yellow-400 text-black px-2 py-1 rounded text-sm"
+      >
+      Fast seller
+    </span>
 
-          <span
-              v-else
-              class="bg-green-500 text-white px-2 py-1 rounded text-sm"
-             >
-             Long shelf life
-           </span>
-        </div>
-    </div>
+    <span
+     v-else
+      class="bg-green-500 text-white px-2 py-1 rounded text-sm"
+     >
+     Long shelf life
+    </span> 
+  </div>
 </template>
 
 <style scoped>

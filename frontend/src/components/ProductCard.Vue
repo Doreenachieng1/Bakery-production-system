@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   product: {
@@ -7,163 +7,39 @@ const props = defineProps({
     required: true
   }
 })
-{
-  id: 1,
-  name: 'Brown Bread',
-  selling_price: 65,
-  category: 'bread',
-  shelf_life_hours: 24,
-  unit: 'loaf',
-  is_active: true
-},
-{
-  id: 2,
-  name: 'Cinnamon Roll',
-  selling_price: 40,
-  category: 'pastry',
-  shelf_life_hours: 12,
-  unit: 'piece',
-  is_active: true
-},
-{
-  id: 3,
-  name: 'Meat Pie',
-  selling_price: 80,
-  category: 'pastry',
-  shelf_life_hours: 8,
-  unit: 'piece',
-  is_active: true
-},
-{
-  id: 4,
-  name: 'Chapati',
-  selling_price: 20,
-  category: 'bread',
-  shelf_life_hours: 8,
-  unit: 'piece',
-  is_active: true
-}
- const selectProduct = (product) => {
-  selectedProduct.value = product
-  quantity.value = 1
-}  
-const urgentCount = computed(() =>
-  products.value.filter(
-    p => p.shelf_life_hours <= 12
-  ).length
-)
 
-const fastSellerCount = computed(() =>
-  products.value.filter(
-    p => p.shelf_life_hours > 12 &&
-         p.shelf_life_hours <= 48
-  ).length
-)
+const emit = defineEmits(['toggle-active','sell'])
 
-const longShelfLifeCount = computed(() =>
-  products.value.filter(
-    p => p.shelf_life_hours > 48
-  ).length
-)
-const filteredProducts = computed(() => {
-  if (showInactive.value) {
-    return products.value
-  }
-
-  return products.value.filter(
-    product => product.is_active
-  )
+const badge = computed(() => {
+  const h = props.product.shelf_life_hours || 0
+  if (h <= 12) return { text: 'Urgent Sale', cls: 'bg-red-100 text-red-700' }
+  if (h <= 48) return { text: 'Fast Seller', cls: 'bg-yellow-100 text-yellow-700' }
+  return { text: 'Long Shelf Life', cls: 'bg-green-100 text-green-700' }
 })
-const toggleActive = (product) => {
-  product.is_active = !product.is_active
-}
 
+const toggleActive = () => emit('toggle-active', props.product)
+const sell = () => emit('sell', props.product)
 </script>
 
 <template>
-  <label class="flex items-center gap-2 mb-4">
-    <input
-    v-model="showInactive"
-    type="checkbox"
-    />
-
-   Show inactive products
- </label>
-  <div class="mb-4 font-semibold">
-    🔴 {{ urgentCount }} urgent |
-    🟡 {{ fastSellerCount }} fast sellers |
-    🟢 {{ longShelfLifeCount }} long shelf life
- </div>
- <ProductCard
-  v-for="product in filteredProducts"
-  :key="product.id"
-  :product="product"
-  @sell="selectProduct"
- />
-  <div
-   v-if="selectedProduct"
-   class="mt-6 bg-white p-4 rounded shadow"
-    \>
-     <h2 class="text-lg font-bold mb-4">
-       Confirm Sale
-      </h2>
-
-      <p><strong>Product:</strong> {{ selectedProduct.name }}</p>
-
-      <p>
-       <strong>Price:</strong>
-        KES {{ selectedProduct.selling_price }}
-      </p>
-
-      <input
-       v-model.number="quantity"
-        type="number"
-        min="1"
-        class="border p-2 rounded mt-3 w-full"
-       />
-
-      <p class="mt-3 font-bold">
-       Total: KES {{ saleTotal }}
-      </p>
-
-      <button
-        class="mt-3 bg-green-500 text-white px-4 py-2 rounded"
-        >
-        Confirm Sale
-      </button>
+  <div class="product-card p-3 rounded bg-white shadow">
+    <div class="flex justify-between items-start">
+      <div>
+        <h3 class="font-bold">{{ product.name }}</h3>
+        <p class="text-sm">KES {{ product.selling_price }}</p>
+      </div>
+      <div class="text-right">
+        <span :class="badge.cls + ' px-2 py-1 rounded text-xs'">{{ badge.text }}</span>
+      </div>
     </div>
-    <span
-      v-if="product.shelf_life_hours <= 12"
-      class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs"
-      >
-       Urgent Sale
-    </span>
 
-    <span
-     v-else-if="product.shelf_life_hours <= 48"
-     class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs"
-     >
-     Fast Seller
-    </span>
-
-    <span
-      v-else
-      class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs"
-      >
-      Long Shelf Life
-    </span>
-    <button
-     @click="$emit('toggle-active', product)"
-     class="text-xs border px-2 py-1 rounded"
-     >
-      {{ product.is_active ? 'Deactivate' : 'Activate' }}
-    </button>
+    <div class="mt-3 flex gap-2">
+      <button @click="sell" class="text-sm bg-blue-500 text-white px-3 py-1 rounded">Sell</button>
+      <button @click="toggleActive" class="text-sm border px-3 py-1 rounded">{{ product.is_active ? 'Deactivate' : 'Activate' }}</button>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-  .product-card {
-   border: 1px solid #ccc;
-   padding: 10px;
-   margin-bottom: 10px;
-   }
+.product-card { border: 1px solid #e5e7eb; }
 </style>
