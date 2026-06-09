@@ -217,6 +217,40 @@ const longShelfCount = computed(
      Long shelf life
     </span> 
   </div>
+
+  <div class="min-h-screen bg-gray-100 p-8">
+    <h1 class="text-3xl font-bold text-center mb-8">
+      Bakery Products
+    </h1>
+
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div
+        v-for="product in products"
+        :key="product.id"
+        :product="product"
+        class="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition"
+      >
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+          {{ product.name }}
+        </h2>
+
+        <p class="text-lg font-semibold text-green-600 mb-2">
+          KES {{ product.price }}
+        </p>
+
+        <p class="text-gray-600 mb-2">
+          Category:
+          <span class="font-medium">{{ product.category }}</span>
+        </p>
+
+        <p class="text-gray-600">
+          Shelf Life:
+          <span class="font-medium">{{ product.shelfLife }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <style scoped>

@@ -1,12 +1,6 @@
 <script setup>
 import {ref} from 'vue'
-import ProductCard from './components/ProductCard.vue'
-import StockIndicator from './components/Stockindicator.vue'
-import About from './views/AboutView.vue' 
-import Home from './views/HomeView.vue'
-import Sales from './views/SalesView.vue'
-import login from './views/LoginView.vue'
-import Product from './views/ProductView.vue'
+
 
 
 const products = ref ([
@@ -20,18 +14,20 @@ const products = ref ([
 </script>
 
 <template>
-  <h1>Bakery Production System</h1>
+
+   <h1>Bakery Production System</h1>
 
   <div v-for="product in products" :key="product.id">
    <h2>{{ product.name }}</h2>
-   <p>Price: {{ product.prices }}</p>
+   <p>Price:KES> {{ product.prices }}</p>
    <p>Category: {{ product.category }}</p>
    <p>Shelf Life: {{ product.shelf_life }} hours</p>
   </div>
-  
+
 </template>
 
 <style scoped>
+
 div {
   border: 1px solid #ccc;
   padding: 10px;
@@ -44,6 +40,5 @@ h2 {
   text-align: center;
 
 }
-
 </style>
 
