@@ -7,8 +7,6 @@ import Home from './views/HomeView.vue'
 import Sales from './views/SalesView.vue'
 import login from './views/LoginView.vue'
 import Product from './views/ProductView.vue'
-import tailwindcss from '@tailwindcss/vite'
-
 
 
 const products = ref ([
