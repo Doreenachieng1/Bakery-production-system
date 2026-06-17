@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('batch_costs', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('description')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->foreignId('production_batch_id')
+                  ->constrained()
+                  ->onDelete('cascade');          // delete batch → delete its cost details
+            $table->decimal('total_ingredient_cost', 10, 2);
+            $table->decimal('labor_cost', 10, 2);
             $table->timestamps();
         });
     }
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('batch_costs');
     }
 };
