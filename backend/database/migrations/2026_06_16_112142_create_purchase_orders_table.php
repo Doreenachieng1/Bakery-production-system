@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('mpesa_ref', 20)->nullable();          //I required for mpesa only
             $table->decimal('quantity', 10, 2);
             $table->decimal('unit_price', 10, 2);
+            $table->date('expected_delivery_date');
+            $table->enum('status', ['pending', 'received', 'cancelled'])->default('pending'); 
             $table->timestamps();
         });
     }

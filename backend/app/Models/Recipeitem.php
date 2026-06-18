@@ -1,11 +1,10 @@
 <?php
 
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RecipeItem extends Model
+class Recipeitem extends Model
 {
     // The BOM join table — connects Products to Ingredients with quantities\
 
@@ -25,4 +24,5 @@ class RecipeItem extends Model
     {
         return $this->belongsTo(Ingredient::class);
     }
+
 }
