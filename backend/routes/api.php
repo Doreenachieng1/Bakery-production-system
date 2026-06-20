@@ -1,7 +1,6 @@
-
-
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProductController;
@@ -31,4 +30,25 @@ Route::get('/health', function () {
         'message' => 'Bakery API is running',
         'timestamp' => now()->toISOString(),
     ]);
+});
+
+// RESTful resource routes — one line creates all CRUD endpoints:
+// GET    /api/products          → ProductController@index
+// POST   /api/products          → ProductController@store
+// GET    /api/products/{id}     → ProductController@show
+// PUT    /api/products/{id}     → ProductController@update
+// DELETE /api/products/{id}     → ProductController@destroy
+// Route::apiResource('products', ProductController::class);
+
+
+// Public routes (no token needed)
+Route::post('/login', [AuthController::class, 'login']);
+
+
+// Protected routes (token required)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::apiResource('products', ProductController::class);
+    // Add more protected routes here
 });
