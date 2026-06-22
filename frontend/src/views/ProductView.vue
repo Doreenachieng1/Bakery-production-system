@@ -1,320 +1,90 @@
 <script setup>
-//fetching all products from the backend
 import { ref, computed } from 'vue'
 import ProductCard from '../components/ProductCard.vue'
-const showInactive = ref(true)
+import { useProductStore } from '../stores/productStore'
 
-// ---------------------------------------------------------------
-// SAMPLE DATA — matches our PRODUCTS table from the ERD
-//
-// In Week 6, this entire array will be replaced with:
-//   onMounted(async () => {
-//     const response = await axios.get('/api/products')
-//     products.value = response.data
-//   })
-//
-// The API response will return the EXACT same shape — that's why
-// we use the same field names as the database columns now.
-// ---------------------------------------------------------------
-const products = ref([
-  { id: 1, name: 'White Bread', category: 'bread', selling_price: 60, shelf_life_hours: 24, unit: 'loaf', is_active: true },
-  { id: 2, name: 'Chocolate Cake', category: 'cake', selling_price: 350, shelf_life_hours: 72, unit: 'piece', is_active: true },
-  { id: 3, name: 'Mandazi', category: 'bun', selling_price: 10, shelf_life_hours: 12, unit: 'piece', is_active: true },
-  { id: 4, name: 'Croissant', category: 'pastry', selling_price: 70, shelf_life_hours: 12, unit: 'piece', is_active: true },
-  { id: 5, name: 'meat pie', category: 'pastry', selling_price: 80, shelf_life_hours: 8, unit: 'piece', is_active: true },
-  { id: 6, name: 'Cinnamon Roll', category: 'pastry', selling_price: 40, shelf_life_hours: 12, unit: 'piece', is_active: true },
-  { id: 7, name: 'chapati', category: 'bread', selling_price: 20, shelf_life_hours: 8, unit: 'piece', is_active: true },
 
-])
-// ad 4 more products to have more data to work with
+const productStore = useProductStore()
 
-// Search and filter state
+
 const searchQuery = ref('')
 const selectedCategory = ref('all')
 
-// --------------------------------------------------------------- 
-// COMPUTED: these recalculate automatically when data changes
-// This is the same pattern you'll use on every page
-// ---------------------------------------------------------------
-const categories = computed(() => {
-  const cats = [...new Set(products.value.map(p => p.category))]
-  return ['all', ...cats.sort()]
-})
-
 const filteredProducts = computed(() => {
-  return products.value.filter(product => {
+  return productStore.products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.value.toLowerCase())
     const matchesCategory = selectedCategory.value === 'all' || product.category === selectedCategory.value
     return matchesSearch && matchesCategory
   })
 })
 
-const activeCount = computed(() => products.value.filter(p => p.is_active).length)
 
-// Event handlers
+
 function handleSale(product) {
   alert(`Sale: ${product.name} for KES ${product.selling_price}`)
-  // In Week 6: await axios.post('/api/sales', { product_id: product.id, quantity: 1, ... })
 }
 
 function handleViewRecipe(productId) {
   alert(`View recipe for product #${productId}`)
-  // In Week 6: await axios.get(`/api/products/${productId}/recipe`)
-  // This will return RECIPE_ITEMS joined with INGREDIENTS
 }
-// TASK 2
-const selectedProduct = ref(null)
-const quantity = ref(1)
-
-const totalPrice = computed(() => {
-  if (!selectedProduct.value) return 0
-  return selectedProduct.value.price * quantity.value
-})
-
-const sellProduct = (product) => {
-  selectedProduct.value = product
-  quantity.value = 1
-}
-
-const confirmSale = () => {
-  alert(
-    `Sold ${quantity.value} ${selectedProduct.value.name}(s) for KES ${totalPrice.value}`
-  )
-
-  selectedProduct.value = null
-}
-
-// TASK 3 COUNTERS
-const urgentCount = computed(
-  () => products.value.filter((p) => p.shelf_life <= 12).length
-)
-
-const fastSellerCount = computed(
-  () =>
-    products.value.filter(
-      (p) => p.shelf_life > 12 && p.shelf_life <= 48
-    ).length
-)
-
-const longShelfCount = computed(
-  () => products.value.filter((p) => p.shelf_life > 48).length
-)
-
 </script>
 
-
 <template>
+  <div>
+    <!-- Page header -->
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-[#1A1A2E]">Product Catalog</h1>
+      <p class="text-gray-500 text-sm mt-1">
+        {{ filteredProducts.length }} of {{ productStore.products.length }} products ({{ productStore.activeProducts.length }} active)
+      </p>
+    </div>
 
-  <main>
-    <h1>Products</h1>
-    <p>Welcome to the products page!</p>
-  </main>
-  <div class="products-page">
-    <div class="page-header">
-      <div>
-        <h1>Product Catalog</h1>
-        <p class="subtitle">
-          {{ filteredProducts.length }} of {{ products.length }} products
-          ({{ activeCount }} active)
-        </p>
+    <!-- Search + filter -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+      <div class="relative w-full sm:max-w-xs">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+        </svg>
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search products..."
+          class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm
+                 focus:outline-none focus:border-[#E8541E] focus:ring-2 focus:ring-orange-100 transition"
+        >
       </div>
-   </div>
-  </div>
-  <!-- Search and filter bar -->
-  <div class="filter-bar">
-    <input
-      v-model="searchQuery"
-      type="text"
-      placeholder="Search products..."
-      class="search-input"
-      >
-     <select v-model="selectedCategory" class="filter-select">
-       <option v-for="cat in categories" :key="cat" :value="cat">
-          {{ cat === 'all' ? 'All categories' : cat }}
-        </option>
-      </select>
-  </div>
 
-   <!-- Product grid -->
-  <div class="product-grid">
-    <ProductCard
-      v-for="product in filteredProducts"
-      :key="product.id"
-      :product="product"
-      @sell-product="handleSale"
-      @view-recipe="handleViewRecipe"
-    />
-  </div>
-
-  <!-- Empty state -->
-  <div v-if="filteredProducts.length === 0" class="empty-state">
-      <p>No products match your search. Try a different term or category.</p>
-  </div>
-  <div class="p-6"></div>
-  <!-- TASK 3 COUNTER -->
-  <div class="mb-4 text-lg font-semibold">
-    🔴 {{ urgentCount }} urgent |
-    🟡 {{ fastSellerCount }} fast sellers |
-    🟢 {{ longShelfCount }} long shelf life
-  </div>
-    
-  <!-- TASK 4 FILTER -->
-  <div class="mb-4">
-    <label class="flex items-center gap-2">
-      <input type="checkbox" v-model="showInactive" />
-      Show inactive products
-    </label>
-  </div>
-
-  <!-- PRODUCTS GRID -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-  <div
-    v-for="product in filteredProducts"
-    :key="product.id"
-    class="border rounded-lg p-4 shadow"
-    :class="{
-    'opacity-50 bg-gray-100': !product.is_active,
-    }"
-    >
-  </div>
-  <div class="flex justify-between items-start">
-    <h2 class="text-xl font-bold">
-      {{ product.name }}
-    </h2>
-    <!-- TASK 4 TOGGLE -->
-    <button
-     @click="toggleActive(product)"
-      class="text-xs px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
-      >
-      {{ product.is_active ? "Deactivate" : "Activate" }}
-    </button>
-  </div>
-
-  <p>KES {{ product.price }}</p>
-  <p>{{ product.category }}</p>
-  <p>{{ product.unit }}</p>
-
-  <!-- TASK 3 BADGES -->
-  <div class="mt-2">
-    <span
-      v-if="product.shelf_life <= 12"
-      class="bg-red-500 text-white px-2 py-1 rounded text-sm"
-      >
-      Urgent sale
-    </span>
-
-    <span
-      v-else-if="product.shelf_life <= 48"
-      class="bg-yellow-400 text-black px-2 py-1 rounded text-sm"
-      >
-      Fast seller
-    </span>
-
-    <span
-     v-else
-      class="bg-green-500 text-white px-2 py-1 rounded text-sm"
-     >
-     Long shelf life
-    </span> 
-  </div>
-
-  <div class="min-h-screen bg-gray-100 p-8">
-    <h1 class="text-3xl font-bold text-center mb-8">
-      Bakery Products
-    </h1>
-
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <div
-        v-for="product in products"
-        :key="product.id"
-        :product="product"
-        class="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition"
-      >
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">
-          {{ product.name }}
-        </h2>
-
-        <p class="text-lg font-semibold text-green-600 mb-2">
-          KES {{ product.price }}
-        </p>
-
-        <p class="text-gray-600 mb-2">
-          Category:
-          <span class="font-medium">{{ product.category }}</span>
-        </p>
-
-        <p class="text-gray-600">
-          Shelf Life:
-          <span class="font-medium">{{ product.shelfLife }}</span>
-        </p>
+      <div class="flex flex-wrap gap-2">
+        <button
+          v-for="cat in productStore.categories"
+          :key="cat"
+          @click="selectedCategory = cat"
+          class="px-3.5 py-1.5 rounded-full text-sm font-medium capitalize border transition-colors"
+          :class="selectedCategory === cat
+            ? 'bg-[#1A1A2E] text-white border-[#1A1A2E]'
+            : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'"
+        >
+          {{ cat === 'all' ? 'All' : cat }}
+        </button>
       </div>
     </div>
+
+      <!-- Product grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <ProductCard
+          v-for="product in filteredProducts"
+          :key="product.id"
+          :product="product"
+          @sell-product="handleSale"
+          @view-recipe="handleViewRecipe"
+        />
+      </div>
+
+    <!-- Empty state -->
+    <div v-if="filteredProducts.length === 0" class="text-center py-12 text-gray-400">
+      No products match your search. Try a different term or category.
+    </div>
   </div>
-
 </template>
-
-<style scoped>
-.products-page {
-  max-width: 1100px;
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-}
-
-.page-header h1 {
-  font-size: 1.5rem;
-  color: #1A1A2E;
-  margin: 0;
-}
-
-.subtitle {
-  color: #6B7280;
-  font-size: 0.9rem;
-  margin-top: 0.25rem;
-}
-
-.filter-bar {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.search-input {
-  flex: 1;
-  max-width: 300px;
-  padding: 10px 14px;
-  border: 1px solid #D1D5DB;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.search-input:focus { border-color: #2563EB; }
-
-.filter-select {
-  padding: 10px 14px;
-  border: 1px solid #D1D5DB;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  background: white;
-  text-transform: capitalize;
-}
-
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: #9CA3AF;
-  font-size: 1rem;
-}
-</style>

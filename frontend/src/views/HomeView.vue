@@ -3,8 +3,8 @@
 </script>
 
 <template>
-    <div class="home-view">
-        <h1>Home View</h1>
-        <p>Welcome to the home view!</p>
-    </div>
+  <main>
+    <h1>Welcome to the Bakery Production System</h1>
+    <p>This is the home page of the Bakery Production System. Here you can find information about our products and services.</p>
+  </main>  
 </template>

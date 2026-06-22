@@ -1,24 +1,15 @@
-<script setup>
-// Minimal script for About view
-import { ref } from 'vue'
-
-const info = ref('Manage production, inventory and orders efficiently.')
-</script>
-
 <template>
-	<section class="About">
-		<h1>About Our Bakery Production System</h1>
-		<p>
-			This application helps manage bakery production, inventory, and orders.
-		</p>
-	</section>
+  <div class="about">
+    <h1>This is an about page</h1>
+  </div>
 </template>
 
-<style scoped>
-.about {
-	padding: 24px;
-}
-.about h1 {
-	margin-bottom: 8px;
+<style>
+@media (min-width: 1024px) {
+  .about {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
 }
 </style>
