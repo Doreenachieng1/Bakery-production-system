@@ -1,3 +1,4 @@
+// ---------------------------------------------------------------
 //pinia store: single source of truth for all product data
 
 //this store is used by:
@@ -5,13 +6,21 @@
 // - SalesView (sales page -select product to sell)
 // - DashboardView (dashboard  - product count stat)
 
+// In Week 6, the hardcoded array becomes an API call:
+//   await axios.get('/api/products')
+//
+// The store pattern: STATE (data) + GETTERS (computed) + ACTIONS (functions)
+// ---------------------------------------------------------------
+
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue';
-import { useProductStore } from '../stores/productStore';
 
-const productStore = useProductStore()
 
 export const useProductStore = defineStore('product', () => {
+    // ==================== STATE ====================
+  // Same data shape as PRODUCTS table from the ERD
+  // fetchProducts() will replace this hardcoded data in Week 6
+
   const products = ref([
     { id: 1, name: 'White Bread', category: 'Bread', price: 60, shelf_life_hours: 24, unit: 'loaf', isActive: true },
     { id: 2, name: 'Mandazi', category: 'Bun', price: 10, shelf_life_hours: 72, unit: 'piece', isActive: true },
@@ -39,14 +48,48 @@ export const useProductStore = defineStore('product', () => {
   
 
  //.......ACTIONS........
-  function addproducts(newproduct) {
-     const id = products.value.length + 1;
-     //products.value.push({id,...newproduct id:newid})
-    }
+ function addProduct(newProduct) {
+    // In a real app, this would POST to the API and get back the created product with an ID
+    const newId = Math.max(...products.value.map(p => p.id)) + 1
+   products.value.push({...newProduct, id: newId})
+  }
+
+  function updateProduct(productId, updates) {
+    // Week 6: await axios.put(`/api/products/${productId}`, updates)
+    const product = products.value.find(p => p.id === productId)
+    if (product) Object.assign(product, updates)
+  }
+
+  function toggleActive(productId) {
+    const product = products.value.find(p => p.id === productId)
+    if (product) product.is_active = !product.is_active
+  }
+
+  function deleteProduct(productId) {
+    // Week 6: await axios.delete(`/api/products/${productId}`)
+   products.value = products.value.filter(p => p.id !== productId)
+ }
+
+  // In Week 6, this replaces the hardcoded data:
+  // async function fetchProducts() {
+  //   isLoading.value = true
+  //   error.value = null
+  //   try {
+  //     const response = await axios.get('/api/products')
+  //     products.value = response.data
+  //   } catch (err) {
+  //     error.value = 'Failed to load products'
+  //   } finally {
+  //     isLoading.value = false
+  //   }
+  // }
 
   return {
-    products,
-    filteredProducts,
-    selectedProduct
-  };
+    // State
+    products, isLoading, error,
+    // Getters
+    productCount, activeProducts, categories, totalCatalogValue,
+    // Actions
+    addProduct, updateProduct, toggleActive,deleteProduct
+  }
 });

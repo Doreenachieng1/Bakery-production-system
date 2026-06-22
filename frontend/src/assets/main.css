@@ -1,5 +1,5 @@
 @import './base.css';
-@import "tailwindcss";
+
 
 #app {
   max-width: 1200px;
@@ -7,29 +7,30 @@
   padding:2rem;
   font-weight: normal;
 }
+
 a,
 .green {
- text-emphasis: none;
-  color: #4CAF50;
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
-  padding: 3px 6px;
+  padding: 3px;
 }
-@media (hovers: hover) {
-  a:hover,
-  .green:hover {
-   background-color: #388E3C;
-    text-decoration: none;
 
+@media (hovers: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
   }
 }
-@media (max-width: 1024px) {}
 
-body {
-    padding: 0.5rem;
-  
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+  }
+
   #app {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    padding: 2rem;
+    padding: 0 2rem;
   }
 }
