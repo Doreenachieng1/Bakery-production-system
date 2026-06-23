@@ -27,6 +27,9 @@ Route::get('/health', function () {
 });
 
 
+// CORS = Cross-Origin Resource Sharing
+// This is handled in app/Http/Middleware/HandleCors.php and config/cors.php
+
 // RESTful resource routes — one line creates all CRUD endpoints:
 // GET    /api/products          → ProductController@index
 // POST   /api/products          → ProductController@store
@@ -38,7 +41,7 @@ Route::get('/health', function () {
 
 // Public routes (no token needed)
 Route::post('/login', [AuthController::class, 'login']);
-
+Route::post('/register', [AuthController::class, 'register']);
 
 // Protected routes (token required)
 Route::middleware('auth:sanctum')->group(function () {
