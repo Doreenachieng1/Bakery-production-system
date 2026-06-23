@@ -1,30 +1,64 @@
 <script setup>
-import {ref} from 'vue'
+import { useAuthStore } from './stores/authStore'
 
-const products = ref ([
-  {id: 1, name: 'Bread', prices: 60, category: 'Bakery', shelf_life: 24},
-  {id: 2, name: 'Cake', prices: 150, category: 'Bakery', shelf_life: 48},
-  {id: 3, name: 'Pastry', prices: 100, category: 'Bakery', shelf_life: 36},
-  {id: 4, name: 'Croissant', prices: 80, category: 'Bakery', shelf_life: 14},
-  {id: 5, name: 'Muffin', prices: 70, category: 'Bakery', shelf_life: 10},
-  {id: 6, name: 'Bagel', prices: 50, category: 'Bakery', shelf_life: 30}
-])
+const authStore = useAuthStore()
 </script>
 
 <template>
-  <h1>Bakery Production System</h1>
+  <div class="min-h-screen bg-gray-50">
+    <nav class="bg-[#1A1A2E] text-white px-8 py-4 flex justify-between items-center">
+      <span class="text-xl font-bold">🍞 Bakery Production System</span>
 
-  <div v-for="product in products" :key="product.id">
-   <h2>{{ product.name }}</h2>
-   <p>Price: {{ product.prices }}</p>
-   <p>Category: {{ product.category }}</p>
-   <p>Shelf Life: {{ product.shelf_life }} hours</p>
+      <div class="flex items-center gap-6">
+        <!-- Show nav links only when logged in -->
+        <template v-if="authStore.isLoggedIn">
+          <!-- All roles see dashboard -->
+          <router-link to="/" class="text-gray-400 hover:text-[#E8541E] transition-colors">
+            Dashboard
+          </router-link>
+
+          <!-- Admin and baker see products -->
+          <router-link v-if="authStore.isAdmin || authStore.isBaker"
+            to="/products" class="text-gray-400 hover:text-[#E8541E] transition-colors">
+            Products
+          </router-link>
+
+          <!-- Admin and cashier see sales -->
+          <router-link v-if="authStore.isAdmin || authStore.isCashier"
+            to="/sales" class="text-gray-400 hover:text-[#E8541E] transition-colors">
+            Sales
+          </router-link>
+
+          <!-- User info + logout -->
+          <span class="text-sm text-gray-400">
+            {{ authStore.userName }} ({{ authStore.userRole }})
+          </span>
+          <button @click="authStore.logout()"
+            class="text-sm text-gray-400 hover:text-red-400 transition-colors cursor-pointer">
+            Logout
+          </button>
+        </template>
+
+        <!-- Show login link when NOT logged in -->
+        <router-link v-else to="/login"
+          class="text-gray-400 hover:text-[#E8541E] transition-colors cursor-pointer">
+          Login
+        </router-link>
+      </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+      <router-view />
+    </main>
   </div>
-  
 </template>
 
-<style scoped>
-
-
+<style>
+.router-link-active {
+  color: #E8541E !important;
+  font-weight: 600;
+}
 </style>
+
+
 
