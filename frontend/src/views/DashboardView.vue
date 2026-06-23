@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import StockIndicator from '../components/StockIndicator.vue'
+import StockIndicator from '../components/Stockindicator.vue'
 import BatchCard from '../components/BatchCard.vue'
 import { useIngredientStore } from '../stores/ingredientStore'
 import { useBatchStore } from '../stores/batchStore'
@@ -11,6 +11,16 @@ const ingredientStore = useIngredientStore()
 const batchStore = useBatchStore()
 const productStore = useProductStore()
 
+const inventoryValue = computed(() => ingredientStore.totalStockValue)
+const needsReorder = computed(() => ingredientStore.lowStockCount > 0)
+const wellStockedCount = computed(() => ingredientStore.ingredients.length - ingredientStore.lowStockCount)
+const lowYield = computed(() =>
+  batchStore.batches.filter(batch =>
+    batch.actual_quantity != null &&
+    batch.planned_quantity &&
+    (batch.actual_quantity / batch.planned_quantity) * 100 < 80
+  ).length
+)
 
 onMounted(async () => {
   try
@@ -37,37 +47,37 @@ onMounted(async () => {
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
       <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
         <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Inventory Value</p>
-        <p class="text-2xl font-bold text-[#1A1A2E] mt-1">KES {{ ingredientStore.totalValue }}</p>
+        <p class="text-2xl font-bold text-[#1A1A2E] mt-1">KES {{ inventoryValue }}</p>
       </div>
-     <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+      <div class="bg-white rounded-xl p-4 shadow-sm text-center">
         <span class="block text-3xl font-bold text-[#1A1A2E]">{{ productStore.productCount }}</span>
         <span class="text-sm text-gray-500">Products</span>
       </div>
 
       <div
         class="bg-white rounded-xl p-4 shadow-sm border"
-        :class="ingredientStore.lowStockCount > 0 ? 'border-red-200 bg-red-50' : 'border-gray-100'"
+        :class="needsReorder ? 'border-red-200 bg-red-50' : 'border-gray-100'"
       >
         <p class="text-xs font-medium uppercase tracking-wide"
-           :class="ingredientStore.lowStockCount > 0 ? 'text-red-500' : 'text-gray-400'">
+           :class="needsReorder ? 'text-red-500' : 'text-gray-400'">
           Needs Reorder
         </p>
         <p class="text-2xl font-bold mt-1"
-           :class="needsReorder > 0 ? 'text-red-600' : 'text-[#1A1A2E]'">
-          {{ ingredientStore.lowStockCount }}  
+           :class="needsReorder ? 'text-red-600' : 'text-[#1A1A2E]'">
+          {{ ingredientStore.lowStockCount }}
         </p>
       </div>
 
 
       <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
         <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Well Stocked</p>
-        <p class="text-2xl font-bold text-emerald-600 mt-1">{{ ingredientStore.lowStockCount }}</p>
+        <p class="text-2xl font-bold text-emerald-600 mt-1">{{ wellStockedCount }}</p>
       </div>
       <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
         <p class="text-xs font-medium uppercase tracking-wide text-gray-400">In Progress</p>
         <p class="text-2xl font-bold text-blue-600 mt-1">{{ batchStore.inProgressCount }}</p>
       </div>
-      <!-- <div
+      <div
         class="bg-white rounded-xl p-4 shadow-sm border col-span-2 sm:col-span-1"
         :class="lowYield > 0 ? 'border-red-200 bg-red-50' : 'border-gray-100'"
       >
@@ -79,7 +89,7 @@ onMounted(async () => {
            :class="lowYield > 0 ? 'text-red-600' : 'text-[#1A1A2E]'">
           {{ lowYield }}
         </p>
-      </div> -->
+      </div>
     </div>
 
     <!-- Ingredient stock -->
@@ -108,7 +118,7 @@ onMounted(async () => {
     </div>
 
     <!-- Completion panel (Task 3) -->
-    <!-- <div v-if="completingBatch"
+    <div v-if="completingBatch"
          class="mt-4 bg-white rounded-xl p-5 shadow-sm border border-blue-200">
       <h3 class="text-base font-semibold text-[#1A1A2E]">
         Complete batch — {{ completingBatch.product_name }}
@@ -145,18 +155,18 @@ onMounted(async () => {
         <button
           @click="confirmCompletion"
           class="py-2 px-5 bg-[#1A1A2E] text-white rounded-lg text-sm font-medium
-                 hover:bg-[#E8541E] transition-colors"
-        >
-          Confirm
+            hover:bg-[#E8541E] transition-colors"
+         >
+         Confirm
         </button>
         <button
           @click="cancelCompletion"
           class="py-2 px-5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium
-                 hover:bg-gray-200 transition-colors"
-        >
+             hover:bg-gray-200 transition-colors"
+         >
           Cancel
         </button>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
