@@ -1,10 +1,11 @@
 <script setup>
 import { ref, computed } from 'vue'
-import ProductCard from '../components/ProductCard.vue'
+import {ProductCard} from '../components/ProductCard.vue'
 import { useProductStore } from '../stores/productStore'
 // SAMPLE DATA: Products - this would normally come from an API call to /api/products
 
 const productStore = useProductStore()
+const products = computed(() => productStore.products)
 
 // Form State for recording a new sale
 
